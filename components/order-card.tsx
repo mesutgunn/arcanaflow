@@ -14,6 +14,17 @@ interface OrderCardProps {
 
 export function OrderCard({ order, onProcess, index }: OrderCardProps) {
     const [isExpanded, setIsExpanded] = useState(false);
+
+    // Debug: Log order data
+    console.log('🎴 [OrderCard] Rendering:', {
+        id: order.id,
+        customer: order.customer,
+        etsyOrderId: order.etsyOrderId,
+        note: order.note,
+        sku: order.sku,
+        status: order.status
+    });
+
     const skuInfo = SKU_LABELS[order.sku];
 
     const statusColorMap: Record<string, string> = {

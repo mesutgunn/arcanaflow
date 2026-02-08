@@ -32,15 +32,10 @@ export async function GET() {
             )
         }
 
-        console.log('📦 [Orders API] Found orders:', {
+        console.log('📦 [Orders API] Raw Supabase data:', {
             count: orders?.length || 0,
             userId: user.id,
-            orders: orders?.map(o => ({
-                id: o.id,
-                etsyOrderId: o.etsy_order_id,
-                customer: o.customer,
-                status: o.status
-            })) || []
+            firstOrder: orders?.[0] || null
         })
 
         // Map snake_case to camelCase for frontend TypeScript compatibility
@@ -48,13 +43,18 @@ export async function GET() {
             id: order.id,
             userId: order.user_id,
             etsyOrderId: order.etsy_order_id,
-            sku: order.sku,
-            customer: order.customer,
-            note: order.note,
+            sku: order.product_name || order.sku, // Try both column names
+            customer: order.customer_name || order.customer,
+            note: order.personalization_note || order.note,
             status: order.status,
             createdAt: order.created_at,
             updatedAt: order.updated_at
         })) || []
+
+        console.log('📦 [Orders API] Mapped orders:', {
+            count: mappedOrders.length,
+            firstMapped: mappedOrders[0] || null
+        })
 
         return NextResponse.json(mappedOrders)
     } catch (error: any) {
