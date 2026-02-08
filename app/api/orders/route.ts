@@ -8,6 +8,12 @@ export async function GET() {
         const supabase = await createClient()
         const { data: { user }, error: authError } = await supabase.auth.getUser()
 
+        console.log('🔍 [Orders API] User auth check:', {
+            userId: user?.id,
+            email: user?.email,
+            authError: authError?.message
+        })
+
         if (authError || !user) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
@@ -18,9 +24,20 @@ export async function GET() {
             orderBy: { createdAt: 'desc' },
         })
 
+        console.log('📦 [Orders API] Found orders:', {
+            count: orders.length,
+            userId: user.id,
+            orders: orders.map(o => ({
+                id: o.id,
+                etsyOrderId: o.etsyOrderId,
+                customer: o.customer,
+                status: o.status
+            }))
+        })
+
         return NextResponse.json(orders)
     } catch (error) {
-        console.error('Error fetching orders:', error)
+        console.error('❌ [Orders API] Error fetching orders:', error)
         return NextResponse.json(
             { error: 'Failed to fetch orders' },
             { status: 500 }

@@ -39,14 +39,20 @@ export default function DashboardPage() {
 
     const fetchOrders = async () => {
         try {
+            console.log('🔄 [Dashboard] Fetching orders...');
             const response = await fetch("/api/orders");
+            console.log('📡 [Dashboard] Response status:', response.status);
+
             if (response.ok) {
                 const data = await response.json();
+                console.log('✅ [Dashboard] Orders:', data);
                 setOrders(data);
             } else if (response.status === 401) {
+                console.log('🔒 [Dashboard] Unauthorized');
                 router.push("/login");
             }
         } catch (err) {
+            console.error("❌ [Dashboard] Error:", err);
             setError("Failed to fetch orders");
         } finally {
             setIsLoading(false);
