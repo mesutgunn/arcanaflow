@@ -37,13 +37,26 @@ export async function GET() {
             userId: user.id,
             orders: orders?.map(o => ({
                 id: o.id,
-                etsyOrderId: o.etsyOrderId,
+                etsyOrderId: o.etsy_order_id,
                 customer: o.customer,
                 status: o.status
             })) || []
         })
 
-        return NextResponse.json(orders || [])
+        // Map snake_case to camelCase for frontend TypeScript compatibility
+        const mappedOrders = orders?.map(order => ({
+            id: order.id,
+            userId: order.user_id,
+            etsyOrderId: order.etsy_order_id,
+            sku: order.sku,
+            customer: order.customer,
+            note: order.note,
+            status: order.status,
+            createdAt: order.created_at,
+            updatedAt: order.updated_at
+        })) || []
+
+        return NextResponse.json(mappedOrders)
     } catch (error: any) {
         console.error('❌ [Orders API] Error fetching orders:', error)
         return NextResponse.json(
