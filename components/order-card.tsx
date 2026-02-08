@@ -66,7 +66,7 @@ export function OrderCard({ order, onProcess, index }: OrderCardProps) {
                         <span className="text-sm font-medium text-cosmic-accent">{skuInfo?.label || order.sku}</span>
                     </div>
                     <h3 className="text-xl font-semibold text-white">{order.customer}</h3>
-                    <p className="text-xs text-cosmic-light/60 mt-1">Order #{order.id}</p>
+                    <p className="text-xs text-cosmic-light/60 mt-1">Order #{order.etsyOrderId || order.id}</p>
                 </div>
 
                 {/* Status Badge */}
@@ -101,7 +101,7 @@ export function OrderCard({ order, onProcess, index }: OrderCardProps) {
                     transition={{ duration: 0.3 }}
                     className="overflow-hidden"
                 >
-                    <p className="mt-3 text-sm text-cosmic-light/80 bg-cosmic-void/30 p-3 rounded-lg border border-cosmic-glow/10">
+                    <p className="mt-3 text-sm text-cosmic-light/80 bg-cosmic-void/30 p-4 rounded-lg border border-cosmic-glow/10 whitespace-pre-wrap leading-relaxed">
                         {order.note}
                     </p>
                 </motion.div>
