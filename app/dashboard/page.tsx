@@ -34,20 +34,8 @@ export default function DashboardPage() {
 
         setUserEmail(user.email || "");
 
-        // Check if user has shop settings
-        const settingsResponse = await fetch("/api/settings");
-        if (settingsResponse.ok) {
-            const data = await settingsResponse.json();
-            if (data.shopSettings) {
-                setHasShopSettings(true);
-                await fetchOrders();
-            } else {
-                setHasShopSettings(false);
-                setIsLoading(false);
-            }
-        } else {
-            setIsLoading(false);
-        }
+        // Always fetch orders (no shop settings required)
+        await fetchOrders();
     };
 
     const fetchOrders = async () => {
