@@ -43,9 +43,9 @@ export async function GET() {
             id: order.id,
             userId: order.user_id,
             etsyOrderId: order.etsy_order_id,
-            sku: order.product_name || order.sku, // Try both column names
+            sku: order.product_name || order.sku,
             customer: order.customer_name || order.customer,
-            note: order.personalization_note || order.note,
+            note: order.personalization || order.note, // FIXED: Use 'personalization'
             status: order.status,
             createdAt: order.created_at,
             updatedAt: order.updated_at
