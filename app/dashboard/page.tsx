@@ -68,30 +68,38 @@ export default function DashboardPage() {
     };
 
     const processOrder = async (orderId: string) => {
-        // Update order status locally
-        setOrders((prev) =>
-            prev.map((order) =>
-                order.id === orderId ? { ...order, status: "PROCESSING" as const } : order
-            )
-        );
-
-        // Call API to process (will trigger n8n webhook in Phase 5)
         try {
-            await fetch(`/api/orders/${orderId}/process`, {
+            console.log('🔄 [Dashboard] Processing order:', orderId);
+
+            // Optimistically update UI to PROCESSING
+            setOrders((prev) =>
+                prev.map((order) =>
+                    order.id === orderId ? { ...order, status: "PROCESSING" as const } : order
+                )
+            );
+
+            // Call API to process order and send to webhook
+            const response = await fetch(`/api/orders/${orderId}/process`, {
                 method: "POST",
             });
 
-            // Simulate processing
-            await new Promise((resolve) => setTimeout(resolve, 2000));
+            if (!response.ok) {
+                throw new Error('Failed to process order');
+            }
 
-            // Update to READY state
-            setOrders((prev) =>
-                prev.map((order) =>
-                    order.id === orderId ? { ...order, status: "READY" as const } : order
-                )
-            );
+            const data = await response.json();
+            console.log('✅ [Dashboard] Order sent to webhook:', data);
+
+            // Webhook will callback and update to READY
+            // Refresh after delay to catch the update
+            setTimeout(() => {
+                fetchOrders();
+            }, 3000);
+
         } catch (err) {
-            console.error("Failed to process order:", err);
+            console.error("❌ [Dashboard] Failed to process order:", err);
+            // Revert on error
+            await fetchOrders();
         }
     };
 
