@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { prisma } from '@/lib/prisma'
 
-// GET /api/orders - Fetch user's orders
+// GET /api/orders - Fetch user's orders using Supabase client
 export async function GET() {
     try {
         const supabase = await createClient()
@@ -18,34 +17,43 @@ export async function GET() {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
-        // IMPORTANT: Always filter by userId for multi-tenant isolation
-        const orders = await prisma.order.findMany({
-            where: { userId: user.id },
-            orderBy: { createdAt: 'desc' },
-        })
+        // Use Supabase client instead of Prisma to avoid connection issues
+        const { data: orders, error: ordersError } = await supabase
+            .from('Order')
+            .select('*')
+            .eq('userId', user.id)
+            .order('createdAt', { ascending: false })
+
+        if (ordersError) {
+            console.error('❌ [Orders API] Supabase error:', ordersError)
+            return NextResponse.json(
+                { error: 'Failed to fetch orders' },
+                { status: 500 }
+            )
+        }
 
         console.log('📦 [Orders API] Found orders:', {
-            count: orders.length,
+            count: orders?.length || 0,
             userId: user.id,
-            orders: orders.map(o => ({
+            orders: orders?.map(o => ({
                 id: o.id,
                 etsyOrderId: o.etsyOrderId,
                 customer: o.customer,
                 status: o.status
-            }))
+            })) || []
         })
 
-        return NextResponse.json(orders)
-    } catch (error) {
+        return NextResponse.json(orders || [])
+    } catch (error: any) {
         console.error('❌ [Orders API] Error fetching orders:', error)
         return NextResponse.json(
-            { error: 'Failed to fetch orders' },
+            { error: error.message || 'Failed to fetch orders' },
             { status: 500 }
         )
     }
 }
 
-// POST /api/orders - Create a new order (for testing)
+// POST /api/orders - Create new order using Supabase client
 export async function POST(request: Request) {
     try {
         const supabase = await createClient()
@@ -56,25 +64,35 @@ export async function POST(request: Request) {
         }
 
         const body = await request.json()
-        const { etsyOrderId, sku, customer, note, status } = body
+        const { etsyOrderId, customer, sku, note, status = 'PENDING' } = body
 
-        // IMPORTANT: Always set userId to current user
-        const order = await prisma.order.create({
-            data: {
+        // Use Supabase client instead of Prisma
+        const { data: order, error: insertError } = await supabase
+            .from('Order')
+            .insert({
                 userId: user.id,
                 etsyOrderId,
-                sku,
                 customer,
+                sku,
                 note,
-                status: status || 'PENDING',
-            },
-        })
+                status,
+            })
+            .select()
+            .single()
+
+        if (insertError) {
+            console.error('❌ [Orders API] Insert error:', insertError)
+            return NextResponse.json(
+                { error: insertError.message },
+                { status: 500 }
+            )
+        }
 
         return NextResponse.json(order)
-    } catch (error) {
-        console.error('Error creating order:', error)
+    } catch (error: any) {
+        console.error('❌ [Orders API] Error creating order:', error)
         return NextResponse.json(
-            { error: 'Failed to create order' },
+            { error: error.message || 'Failed to create order' },
             { status: 500 }
         )
     }
