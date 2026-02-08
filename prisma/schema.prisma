@@ -21,16 +21,27 @@ model User {
 }
 
 model ShopSettings {
-  id                String   @id @default(uuid())
-  userId            String   @unique
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String    @id @default(uuid())
+  userId            String    @unique
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  etsyShopId        String
-  etsyKeystring     String   // Encrypted
-  etsySharedSecret  String   // Encrypted
+  // OAuth tokens (encrypted)
+  etsyAccessToken   String?
+  etsyRefreshToken  String?
+  etsyTokenExpiry   DateTime?
   
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  // Shop information
+  etsyShopId        String?
+  etsyShopName      String?
+  
+  // Legacy fields (deprecated, keep for backward compatibility)
+  etsyKeystring     String?   // Encrypted
+  etsySharedSecret  String?   // Encrypted
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  @@index([userId])
 }
 
 model Order {
@@ -47,7 +58,9 @@ model Order {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
+  @@unique([userId, etsyOrderId])
   @@index([userId])
   @@index([status])
   @@index([etsyOrderId])
 }
+
