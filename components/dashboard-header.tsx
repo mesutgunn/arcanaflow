@@ -57,7 +57,6 @@ export function DashboardHeader({ onSync, isSyncing = false, userEmail }: Dashbo
 
                 {/* User Profile & Actions */}
                 <div className="flex items-center gap-4">
-                    {/* Sync Button */}
                     <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
@@ -71,7 +70,7 @@ export function DashboardHeader({ onSync, isSyncing = false, userEmail }: Dashbo
                         >
                             <RefreshCw className="w-4 h-4" />
                         </motion.div>
-                        {isSyncing ? "Syncing..." : "Sync Orders"}
+                        {isSyncing ? "Checking..." : "Check Orders"}
                     </motion.button>
 
                     {/* User Profile Dropdown */}

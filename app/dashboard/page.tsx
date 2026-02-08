@@ -68,10 +68,35 @@ export default function DashboardPage() {
 
     const syncOrders = async () => {
         setIsSyncing(true);
-        // Simulate syncing (will be real Etsy API later)
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-        await fetchOrders();
-        setIsSyncing(false);
+        setError("");
+
+        try {
+            // Trigger n8n email check
+            const checkResponse = await fetch("/api/orders/check", {
+                method: "POST",
+            });
+
+            if (!checkResponse.ok) {
+                const data = await checkResponse.json();
+                if (data.error === "n8n webhook not configured yet") {
+                    // Silently ignore if n8n not set up yet
+                    console.log("n8n not configured, skipping check");
+                } else {
+                    throw new Error(data.error || "Failed to check orders");
+                }
+            }
+
+            // Wait a moment for n8n to process
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+
+            // Refresh orders from database
+            await fetchOrders();
+        } catch (err: any) {
+            console.error("Check orders error:", err);
+            setError(err.message || "Failed to check orders");
+        } finally {
+            setIsSyncing(false);
+        }
     };
 
     const processOrder = async (orderId: string) => {
