@@ -13,16 +13,25 @@ export default function SettingsPage() {
     const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
     const supabase = createClient();
 
-    const webhookUrls = [
+    const supabaseCredentials = [
         {
-            title: "Email Parser Webhook",
-            description: "n8n webhook for parsing Etsy order emails",
-            url: `https://arcanaflow.vercel.app/api/webhooks/orders`,
-            icon: "📧",
+            title: "Supabase URL",
+            description: "n8n Supabase connection - Project URL",
+            value: process.env.NEXT_PUBLIC_SUPABASE_URL || "",
+            icon: "🔗",
         },
         {
+            title: "Supabase Service Role Key",
+            description: "n8n Supabase connection - Service role key for INSERT operations",
+            value: process.env.SUPABASE_SERVICE_ROLE_KEY || "",
+            icon: "🔑",
+        },
+    ];
+
+    const webhookUrls = [
+        {
             title: "AI Reading Webhook",
-            description: "n8n webhook for AI tarot reading generation",
+            description: "n8n webhook for triggering AI tarot reading generation",
             url: `https://arcanaflow.vercel.app/api/webhooks/reading`,
             icon: "🔮",
         },
@@ -115,7 +124,68 @@ export default function SettingsPage() {
                     </p>
                 </motion.div>
 
+                {/* Supabase Credentials for n8n */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.15 }}
+                    className="mb-6"
+                >
+                    <h2 className="text-xl font-semibold text-cosmic-accent mb-4">
+                        Supabase Credentials (for n8n)
+                    </h2>
+                    <p className="text-sm text-cosmic-light/60 mb-4">
+                        Use these credentials in n8n Supabase node to insert orders directly
+                    </p>
+
+                    {supabaseCredentials.map((cred, index) => (
+                        <motion.div
+                            key={index}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2 + index * 0.1 }}
+                            className="glass-card p-6 mb-4"
+                        >
+                            <h3 className="text-lg font-semibold text-cosmic-accent mb-2 flex items-center gap-2">
+                                <span className="text-2xl">{cred.icon}</span>
+                                {cred.title}
+                            </h3>
+                            <p className="text-sm text-cosmic-light/60 mb-3">
+                                {cred.description}
+                            </p>
+
+                            <div className="bg-cosmic-void/50 rounded-lg p-4 border border-cosmic-glow/20">
+                                <div className="flex items-center justify-between gap-4">
+                                    <code className="text-xs text-cosmic-light/80 font-mono break-all">
+                                        {cred.value}
+                                    </code>
+                                    <button
+                                        onClick={() => copyToClipboard(cred.value, index + 100)}
+                                        className="flex-shrink-0 p-2 hover:bg-cosmic-glow/10 rounded-lg transition-colors"
+                                    >
+                                        {copiedIndex === index + 100 ? (
+                                            <CheckCircle2 className="w-5 h-5 text-green-400" />
+                                        ) : (
+                                            <Copy className="w-5 h-5 text-cosmic-glow" />
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    ))}
+                </motion.div>
+
                 {/* Webhook URLs */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    className="mb-6"
+                >
+                    <h2 className="text-xl font-semibold text-cosmic-accent mb-4">
+                        Webhook URLs (for AI/PDF workflows)
+                    </h2>
+                </motion.div>
                 {webhookUrls.map((webhook, index) => (
                     <motion.div
                         key={index}
@@ -161,28 +231,28 @@ export default function SettingsPage() {
                 >
                     <h2 className="text-lg font-semibold text-cosmic-accent mb-3 flex items-center gap-2">
                         <AlertCircle className="w-5 h-5" />
-                        Setup Instructions
+                        n8n Setup Instructions
                     </h2>
-                    <ol className="text-sm text-cosmic-light/80 space-y-3 list-decimal list-inside">
-                        <li>
-                            Copy your <strong>User ID</strong> - you'll need it in n8n workflows
-                        </li>
-                        <li>
-                            In your n8n workflow, use the <strong>Email Parser Webhook URL</strong> for the HTTP Request node
-                        </li>
-                        <li>
-                            Add <strong>Authorization</strong> header:
-                            <code className="ml-2 px-2 py-1 bg-cosmic-void/50 rounded text-xs">
-                                Bearer bf7fa5d75f174d3f8a250a2abf7028da0ffd69df0e04ab31d0237e2ece334f0a
-                            </code>
-                        </li>
-                        <li>
-                            Send order data in JSON format with your <strong>userId</strong> field
-                        </li>
-                        <li>
-                            Test the connection from n8n to verify it works
-                        </li>
-                    </ol>
+                    <div className="space-y-4 text-sm text-cosmic-light/80">
+                        <div>
+                            <h3 className="font-semibold text-cosmic-accent mb-2">For Order Creation (Email Parsing):</h3>
+                            <ol className="space-y-2 list-decimal list-inside">
+                                <li>Copy <strong>Supabase URL</strong> and <strong>Service Role Key</strong></li>
+                                <li>In n8n, add <strong>Supabase</strong> credentials with these values</li>
+                                <li>Use <strong>Supabase Insert</strong> node to insert into <code className="px-2 py-1 bg-cosmic-void/50 rounded">Order</code> table</li>
+                                <li>Include <strong>userId</strong> field (copy from above) in row data</li>
+                            </ol>
+                        </div>
+
+                        <div>
+                            <h3 className="font-semibold text-cosmic-accent mb-2">For AI/PDF Generation:</h3>
+                            <ol className="space-y-2 list-decimal list-inside">
+                                <li>Use the <strong>AI Reading Webhook URL</strong> above</li>
+                                <li>Add <strong>Authorization</strong> header with Bearer token</li>
+                                <li>Send POST request with order data in JSON format</li>
+                            </ol>
+                        </div>
+                    </div>
                 </motion.div>
 
                 {/* Security Notice */}
