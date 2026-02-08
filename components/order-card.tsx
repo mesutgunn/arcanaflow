@@ -16,14 +16,14 @@ export function OrderCard({ order, onProcess, index }: OrderCardProps) {
     const [isExpanded, setIsExpanded] = useState(false);
     const skuInfo = SKU_LABELS[order.sku];
 
-    const statusColorMap = {
+    const statusColorMap: Record<string, string> = {
         "status-pending": "from-yellow-500/50 to-amber-500/50",
         "status-processing": "from-blue-500/50 to-sky-500/50",
         "status-ready": "from-green-500/50 to-emerald-500/50",
         "status-sent": "from-indigo-500/50 to-violet-500/50",
     };
 
-    const statusBgMap = {
+    const statusBgMap: Record<string, string> = {
         PENDING: "bg-yellow-500/10 text-yellow-400 border-yellow-500/30",
         PROCESSING: "bg-blue-500/10 text-blue-400 border-blue-500/30",
         READY: "bg-green-500/10 text-green-400 border-green-500/30",
