@@ -18,9 +18,10 @@ export async function GET() {
         }
 
         // Use Supabase client instead of Prisma to avoid connection issues
+        // Explicitly select all columns including id
         const { data: orders, error: ordersError } = await supabase
             .from('orders')
-            .select('*')
+            .select('id, user_id, etsy_order_id, customer_name, product_name, sku, personalization, customer_email, status, created_at, updated_at')
             .eq('user_id', user.id)
             .order('created_at', { ascending: false })
 
