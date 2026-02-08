@@ -1,0 +1,52 @@
+import { Order } from "@/types/order";
+
+export const mockOrders: Order[] = [
+    {
+        id: "1",
+        sku: "arvionlove",
+        customer: "Jane Doe",
+        note: "Will I ever find true love? I've been feeling lost lately and need guidance on my romantic path.",
+        status: "PENDING",
+        createdAt: "2026-02-08T10:30:00Z",
+    },
+    {
+        id: "2",
+        sku: "arvioncareer",
+        customer: "John Smith",
+        note: "Should I take the new job offer or stay at my current position? I'm torn between security and growth.",
+        status: "PROCESSING",
+        createdAt: "2026-02-08T09:15:00Z",
+    },
+    {
+        id: "3",
+        sku: "arvionyesno",
+        customer: "Emily Chen",
+        note: "Should I move to a new city this year?",
+        status: "READY",
+        createdAt: "2026-02-08T08:00:00Z",
+    },
+    {
+        id: "4",
+        sku: "arvionlove",
+        customer: "Michael Brown",
+        note: "Is my current relationship meant to last? We've been together for 3 years but I'm unsure about our future.",
+        status: "SENT",
+        createdAt: "2026-02-07T16:45:00Z",
+    },
+    {
+        id: "5",
+        sku: "arvioncareer",
+        customer: "Sarah Johnson",
+        note: "What path should I take to advance in my career? Feeling stuck and need direction.",
+        status: "PENDING",
+        createdAt: "2026-02-08T11:00:00Z",
+    },
+    {
+        id: "6",
+        sku: "arvionyesno",
+        customer: "David Lee",
+        note: "Should I invest in the new business opportunity that came my way?",
+        status: "PROCESSING",
+        createdAt: "2026-02-08T07:30:00Z",
+    },
+];

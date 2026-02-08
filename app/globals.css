@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-cosmic-gradient bg-fixed min-h-screen text-cosmic-light;
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    @apply bg-glass-gradient backdrop-blur-xl border border-cosmic-glow/20 rounded-xl shadow-2xl;
+  }
+
+  .glass-header {
+    @apply bg-cosmic-purple/40 backdrop-blur-lg border-b border-cosmic-glow/10;
+  }
+
+  .glow-border {
+    @apply relative;
+  }
+
+  .glow-border::before {
+    content: '';
+    @apply absolute inset-0 rounded-xl bg-gradient-to-r from-cosmic-glow/50 to-cosmic-accent/50 blur-sm -z-10;
+  }
+}
+
+/* SmoothScrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-cosmic-void;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-cosmic-glow/50 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-cosmic-glow;
+}
