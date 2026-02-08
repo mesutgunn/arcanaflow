@@ -21,8 +21,8 @@ export async function GET() {
         const { data: orders, error: ordersError } = await supabase
             .from('orders')
             .select('*')
-            .eq('userId', user.id)
-            .order('createdAt', { ascending: false })
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false })
 
         if (ordersError) {
             console.error('❌ [Orders API] Supabase error:', ordersError)
@@ -70,8 +70,8 @@ export async function POST(request: Request) {
         const { data: order, error: insertError } = await supabase
             .from('orders')
             .insert({
-                userId: user.id,
-                etsyOrderId,
+                user_id: user.id,
+                etsy_order_id: etsyOrderId,
                 customer,
                 sku,
                 note,
