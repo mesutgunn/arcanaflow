@@ -19,7 +19,7 @@ export async function GET() {
 
         // Use Supabase client instead of Prisma to avoid connection issues
         const { data: orders, error: ordersError } = await supabase
-            .from('Order')
+            .from('orders')
             .select('*')
             .eq('userId', user.id)
             .order('createdAt', { ascending: false })
@@ -68,7 +68,7 @@ export async function POST(request: Request) {
 
         // Use Supabase client instead of Prisma
         const { data: order, error: insertError } = await supabase
-            .from('Order')
+            .from('orders')
             .insert({
                 userId: user.id,
                 etsyOrderId,

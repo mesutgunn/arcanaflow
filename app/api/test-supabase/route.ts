@@ -19,7 +19,7 @@ export async function GET() {
 
         // Test 2: Check if we can query Order table
         const { data: orders, error: ordersError } = await supabase
-            .from('Order')
+            .from('orders')
             .select('*')
             .limit(10)
 
